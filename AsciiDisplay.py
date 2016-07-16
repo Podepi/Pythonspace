@@ -54,8 +54,8 @@ def disDrawCircle(screen, y, x, r, sym, xshift=0, yshift=0, color=None):
                 except: pass
     #screen.refresh()
 
-def disHeader(text, screen, sym="-"):
-    header = "+" + str(text).center(screen.getmaxyx()[1]-2, sym) + "+"
+def disHeader(text, width, sym="-"):
+    header = "+" + str(text).center(width, sym) + "+"
     return header
 
 def disRJust(text, screen, rshift=0, sym=" "):
@@ -92,3 +92,4 @@ def disWritePara(screen, y, x, h, w, text):
     for l in output:
         screen.addstr(line+y, x, l)
         line += 1
+    return line

@@ -100,7 +100,7 @@ def newGame():
     player.x = galaxy.planets[player.pln].x
     player.y = galaxy.planets[player.pln].y
     
-    mainscr.addstr(0, 0, disHeader("Press 'M'", mainscr), curses.color_pair(3))
+    mainscr.addstr(0, 0, disHeader("Press 'M'", 80), curses.color_pair(3))
     disDrawCircle(mainscr, 12, 1, 5, ".")
     dim = mainscr.getmaxyx()
     disDrawBorder(mainscr, 0, 0, view_height, view_width, draw=[False, True, True, True])

@@ -13,6 +13,7 @@ class Planet(object):
         self.x = 0
         self.y = 0
         self.range = 0
+        self.empr = "None"
         self.name = "None"
         self.fctn = "None"
         self.popl = "None"
@@ -21,6 +22,7 @@ class Planet(object):
         self.prod = "None"
         self.temp = 0
         self.desc = "None"
+        self.wealth = "None"
 
 def genplanet():
     name = makeword(rm.randint(2,3))

@@ -66,14 +66,25 @@ def makePanel(h,w, y,x, title, text):
 def makeInfoPanel(h,w, y,x, title, info):
     win = curses.newwin(h,w, y,x)
     win.erase()
-    win.border(0, 0, 0, 0, curses.ACS_TTEE, 0, curses.ACS_BTEE, curses.ACS_RTEE)
     
     if title == "<Planet>":
-        win.addstr(0, int(w/2) - int((len(info.name)+10)/2), " Target: {} ".format(info.name.capitalize()),
-            curses.color_pair(16))
-        disWritePara(win, 1, 1, h, w, "")
+        title = " Target: {} ".format(info.name.capitalize())
+        disWritePara(win, 1, 1, h, w, "{:^29}".format(info.empr))
+        disWritePara(win, 2, 1, h, w, "Population:{:>18}".format(info.popl))
+        disWritePara(win, 3, 1, h, w, "Tech level:{:>18}".format(info.tech))
+        disWritePara(win, 4, 1, h, w, "Wealth rating:{:>15}".format(info.wealth))
+        disWritePara(win, 5, 1, h, w, "Production:{:>18}".format(info.prod))
+        disWritePara(win, 6, 1, h, w, "Avg. Temp:{:>19}".format(str(info.temp) + "*C"))
+        disWritePara(win, 7, 1, h, w, disHeader("Useful Notes", 27))
+        line = 8
+        for item in info.desc:
+            line += disWritePara(win, line, 1, h, w-2, "> " + item)
+            if line >= w:
+                break;
         
     #disWritePara(win, 1, 1, h, w, text)
+    win.border(0, 0, 0, 0, curses.ACS_TTEE, 0, curses.ACS_BTEE, curses.ACS_RTEE)
+    win.addstr(0, int(w/2) - int((len(title)+2)/2), " {} ".format(title), curses.color_pair(16))
     
     panel = curses.panel.new_panel(win)
     return win, panel
@@ -86,13 +97,17 @@ def menuMap(screen, player, galaxy, mvptr=(0, 0)):
     player.menu = "map"
     screen.box()
     win1, panel1, selected= drawMap(player, galaxy, 0,0, 23,50, mvptr[0],mvptr[1])
+    win2, panel2 = None, None
     if selected == None:
         selected = rmplanet.Planet()
-    win2, panel2 = makeInfoPanel(23,31, 0,49, "<Planet>", selected)
+    else:
+        win2, panel2 = makeInfoPanel(23,31, 0,49, "<Planet>", selected)
     #win2, panel2 = makePanel(10,10, 5,33, "test")
     menu_store.panellist.append(panel1)
     menu_store.winlist.append(win1)
-    menu_store.panellist.append(panel2)
-    menu_store.winlist.append(win2)
+    try:
+        menu_store.panellist.append(panel2)
+        menu_store.winlist.append(win2)
+    except: pass
     #screen.vline(1, 33, "|", 22)
     return win1, panel1

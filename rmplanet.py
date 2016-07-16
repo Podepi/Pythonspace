@@ -1,7 +1,6 @@
 import random as rm
 from rmword import *
 from rmdesc2 import *
-from AsciiDisplay import disDot
 
 pwealth = ["Impoverished", "Poor", "Average", "Rich", "Extremely rich"]
 ptype = ["Agricultural", "Industrial", "Mining", "Mixed", "Scientific", "Cultural", "Military"]
@@ -9,18 +8,19 @@ ppop = ["000", "Million", "Billion"]
 pera = ["Early", "Middle", "Late"]
 ptech = ["Medieval", "Steam", "Industrial", "Atomic", "Space", "Information", "Robotic", "Cyberpunk", "Nanotech"]
 
-class Planet(disDot):
+class Planet(object):
     def __init__(self):
         self.x = 0
         self.y = 0
         self.range = 0
-        self.name = ""
-        self.fctn = ""
-        self.popl = ""
-        self.tech = ""
-        self.prod = ""
+        self.name = "None"
+        self.fctn = "None"
+        self.popl = "None"
+        self.sym = "?"
+        self.tech = "None"
+        self.prod = "None"
         self.temp = 0
-        self.desc = ""
+        self.desc = "None"
 
 def genplanet():
     name = makeword(rm.randint(2,3))

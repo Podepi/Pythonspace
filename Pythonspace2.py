@@ -1,26 +1,55 @@
+# coding=utf-8
 import random as rm
+import curses
 from rmword import *
 from rmplanet import *
 from rmdesc2 import *
 from AsciiDisplay import *
-from AsciiMenu import *
-#import time
+from AsciiMenu2 import *
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
+code = locale.getpreferredencoding()
 
 class Galaxy(object):
     def __init__(self):
         self.visible = []
         self.size = 0
         self.planets = []
+        self.pad = None
+    def initPad(self):
+        for p in self.planets:
+            self.pad.addch(p.y, p.x, p.sym)
 
-class Player(disDot):
+class Player(object):
     def __init__(self):
-        self.range = 5
+        self.x = 0
+        self.y = 0
+        self.cargo = {}
+        self.cargomax = 10
+        self.menu = "init"
+        self.menuptr = [0, 0]
         self.pln = Planet()
+        self.range = 5
+        self.shipclass = ""
+        self.shipdesc = ""
+        self.shipname = ""
+        self.shipsign = ""
         self.sym = "@"
+
+'''stdscr = curses.initscr()
+curses.start_color()
+curses.use_default_colors()
+for i in range(0, curses.COLORS):
+    for o in range(0, curses.COLORS):
+        curses.init_pair(i, o, -1);'''
+        
+mainscr = curses.initscr()
+
+panels = {"map":[]}
 
 galaxy = Galaxy()
 player = Player()
-menu = "intro"
 info = "Commands:\n - 'm' to show map\n - 'p' to enter hyperspace\n - 's' to change ship\n - 'o' to save most recent to file\nEnter any other command for help"
 most_recent = ""
 spfx = ["The", "Starship", "Spaceship", "Starboat"]
@@ -32,68 +61,95 @@ sclas = ["Scout", "Transport", "Cargo Ship", "Starship",
 sstat = ["handling", "engines", "weaponry", "shielding", "life support", "hyperdrive", "energy systems"]
 squal = ["exceptional", "decent", "terrible", "appalling", "unreliable", "effective"]
 
-view_width = 40
-view_height = 20
-    
+view_width = 79
+view_height = 23
+
 def genship():
-    s_desc = ""
-    #s_desc += "- Your ship -".center(40)
-    s_desc += "- {} {} -".format(rm.choice(spfx), makeword(2)).center(40)
-    s_desc += "\n{} Class {}".format(makeword(2), rm.choice(sclas))
-    s_desc += "\nCallsign: {}-{}".format(makeword(1).upper(), rm.randint(0, 99999))
-    s_desc += "\nThis ship has {} {} for its class.".format(rm.choice(squal), rm.choice(sstat))
-    return s_desc
+    player.shipname = "{} {}".format(rm.choice(spfx), makeword(2))
+    player.shipclass += "\n{} Class {}".format(makeword(2), rm.choice(sclas))
+    player.shipsign += "{}-{}".format(makeword(1).upper(), rm.randint(0, 99999))
+    player.shipdesc += "This ship has {} {} for its class.".format(rm.choice(squal), rm.choice(sstat))
 
 def newGame():
     locations = []
     galaxy.size = 20
-    i = raw_input("Size of galaxy (default 20): ")
-    if i != '':
-        galaxy.size = int(i)
+    #galaxy.pad = curses.newpad(galaxy.size, galaxy.size)
+    #i = raw_input("Size of galaxy (default 20): ")
+    #if i != '':
+    #    galaxy.size = int(i)
         
     galaxy.num = 20
-    i = raw_input("Number of planets (default 20): ")
-    if i != '':
-        galaxy.size = int(i)
+    #i = raw_input("Number of planets (default 20): ")
+    #if i != '':
+    #    galaxy.size = int(i)
 
     for i in xrange(galaxy.num):
         galaxy.planets.append(genNewPlanet())
 
-        rx = rm.randint(0, galaxy.size)
-        ry = rm.randint(0, galaxy.size)
+        rx = rm.randint(0, galaxy.size - 1)
+        ry = rm.randint(0, galaxy.size - 1)
 
         while locations.count( (rx, ry) ) != 1:
             galaxy.planets[i].x = rx
             galaxy.planets[i].y = ry
             locations.append( (rx, ry) )
+            
+    #galaxy.initPad()
 
     player.pln = rm.randint(0, len(galaxy.planets) - 1)
     player.x = galaxy.planets[player.pln].x
     player.y = galaxy.planets[player.pln].y
+    
+    mainscr.addstr(0, 0, disHeader("Press 'M'", mainscr), curses.color_pair(3))
+    disDrawCircle(mainscr, 12, 1, 5, ".")
+    dim = mainscr.getmaxyx()
+    disDrawBorder(mainscr, 0, 0, view_height, view_width, draw=[False, True, True, True])
+    mainscr.refresh()
             
-newGame()
+def main(stdscr):
+    #curses.noecho()
+    #curses.cbreak()
+    curses.curs_set(0)
+    curses.start_color()
+    curses.use_default_colors()
+    for i in range(0, curses.COLORS):
+        curses.init_pair(i+1, i, -1)
+    curses.init_pair(17, 11, 18) # Yellow text, dark blue background
+    curses.init_pair(16, -1, 19) # White text, dark blue background
+    curses.init_pair(232, 14, 19) # Cyan text, dark blue background
+    try:
+        for i in range(0, 255):
+            stdscr.addstr(str(i), curses.color_pair(i))
+    except curses.ERR:
+        # End of screen reached
+        pass
+        
+    win1 = "init"
+    panel1 = "init"
+    stdscr.getch()
+    
+    newGame()
+    
+    while True:
+        event = stdscr.getch()
+        if event == ord("m"):
+            player.menu = "map"
+            player.menuptr = [player.y, player.x]
+            win1, panel1 = menuMap(stdscr, player, galaxy, player.menuptr)
+        if player.menu == "map":
+            if event == curses.KEY_LEFT:
+                player.menuptr[1] -= 1
+                win1, panel1 = menuMap(stdscr, player, galaxy, player.menuptr)
+            elif event == curses.KEY_RIGHT:
+                player.menuptr[1] += 1
+                win1, panel1 = menuMap(stdscr, player, galaxy, player.menuptr)
+            elif event == curses.KEY_UP:
+                player.menuptr[0] -= 1
+                win1, panel1 = menuMap(stdscr, player, galaxy, player.menuptr)
+            elif event == curses.KEY_DOWN:
+                player.menuptr[0] += 1
+                win1, panel1 = menuMap(stdscr, player, galaxy, player.menuptr)
+        curses.panel.update_panels(); stdscr.refresh()
+                
 
-print "\n" + genship()
-print "\n" + info.center(40)
-
-while True:
-    inpt = raw_input().lower()
-    a = 0
-    if inpt == "p":
-        most_recent = genplanet()
-        print most_recent
-        menu = "planetOld"
-    elif inpt == "s":
-        most_recent = genship()
-        print most_recent
-        menu = "shipOld"
-    elif inpt == "o":
-        out = "saved/" + str(len(most_recent)) + most_recent.strip(" -")[0:20].strip(" -")
-        with open(out, "wr") as f:
-            f.write(most_recent)
-            print "Saved to: " + out
-    elif inpt == "m":
-        drawMap(player, galaxy, view_width, view_height)
-        menu = "map"
-    else:
-        print info
+curses.wrapper(main)

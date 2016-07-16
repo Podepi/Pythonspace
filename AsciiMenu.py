@@ -1,3 +1,4 @@
+import curses
 from AsciiDisplay import *
 from rmword import calcDist
 
@@ -5,7 +6,7 @@ info = "Commands:\n - 'm' to show map\n - 'p' to enter hyperspace\n - 's' to cha
 
 def menuPlanet(p, width):
     line = ""
-    output = disHeader("( " + p.name + " )", width)
+    output = disHeader(p.name, screen, " ")
     line = "|Allegiance: {}".format(p.empr)
     output += line + disRJust("|\n", width, len(line))
 
@@ -21,10 +22,10 @@ def menuPlanet(p, width):
     line = "|Production: {}".format(p.prod)
     output += line + disRJust("|\n", width, len(line))
 
-    line = "|Avg. Temp:  {}*C".format(p.temp)
+    line = u"|Avg. Temp:  {}*C".format(p.temp).encode("utf-8")
     output += line + disRJust("|\n", width, len(line))
 
-    output += disHeader("Useful Notes",  width)
+    output += disHeader("Useful Notes",  screen)
     
     if len(p.desc) > 0:
         for note in p.desc:
@@ -32,64 +33,72 @@ def menuPlanet(p, width):
             output += line + disRJust("|\n", width, len(line))
     else: output += "- This planet is a tedious place"
 
-    output += disHeader("", width)
     print output
+    
+    cmd = commandList([("t", "trade", "Trade goods", p), ("m", "map", "To map view")])
 
-def drawMap(player, galaxy, view_width, view_height):
-    x = player.x - (view_width/2)
-    y = player.y - (view_height/2)
-    draw = []
-    draw = disInit(draw, view_width, view_height)
 
-    output = disHeader("Local Map", view_width)
+def menuShip(s, width):
+    line = ""
+    disHeader(s.shipname, screen)
+    
+    line += s.shipclass
+
+def drawList(y, x, screen, items):
+    for i in xrange(len(items)):
+        screen.addstr(x, y+i, items[i])
+    screen.refresh()
+
+def drawMap(screen, player, galaxy):
+    dim = screen.getmaxyx()
+    screen.clear()
+    
+    mapheight = 20
+    mapwidth = 32
+    
+    x = player.x - int(mapwidth/2) - 1
+    y = player.y - int(mapheight/2) - 1
+    #draw = []
+    #draw = disInit(draw, view_width, view_height)
+    #output = ""
     galaxy.visible = []
     in_range = []
     out_range = []
+    
+    #disDrawBorder(screen, 0, 0, dim[1] - 1, dim[0] - 1)
 
-    disDrawCircle(draw, player.x, player.y, player.range, ".", x, y)
-
-    for p in galaxy.planets:
-
-        disWrite(draw, p, x, y)
-
-        if canWrite(draw, p, x, y) == True:
-            p.range = calcDist(p.x, p.y, player.x, player.y, 1)
-            if p.range <= player.range:
-                in_range.append(p)
-            else:
-                out_range.append(p)
-            galaxy.visible.append(p)
+    screen.addstr(0, 0, disHeader("Local Map", screen))
+    disDrawCircle(screen, mapheight - 1, player.x - x, player.range, ".")
 
     #disWrite(draw, player, x, y)
-
-    for row in xrange(view_height):
-        output += "|"
-        for cell in xrange(view_width):
-            output += draw[row][cell]
-        output += "|\n"
-
     loop = 0
+    galaxy.pad.refresh(y,x, 1,1, mapheight, mapwidth)
+    
+    #screen.addstr(mapheight+2, 0, disHeader("Systems in range:", stdscr))
 
-    output += disHeader("Systems in range:", view_width)
-
-    for p in in_range:
+    '''for p in in_range:
         loop += 1
         line = "|" + str(loop) + " - " + p.name
         if p.range == 0:
-            range = ("Current location|").rjust(view_width+2-len(line), " ")
+            range = ("Current location|").rjust(dim[1]+2-len(line), " ")
         else:
-            range = (str(p.range)+"ly|").rjust(view_width+2-len(line), " ")
-        output += line + range + "\n"
-
-    output += disHeader("Out of range:", view_width)
+            range = (str(p.range)+"ly|").rjust(dim[1]+2-len(line), " ")
+        if loop + mapheight + 2 < dim[0]:
+            screen.addstr(mapheight+2+loop, 0, line + range)
+        
+    loop += 1
+    screen.addstr(mapheight+2+loop, 0, disHeader("Out of range:", stdscr))
 
     for p in out_range:
         loop += 1
         line = "|" + str(loop) + " - " + p.name
-        range = (str(p.range)+"ly|").rjust(view_width+2-len(line), " ")
-        output += line + range + "\n"
+        range = (str(p.range)+"ly|").rjust(dim[1]+2-len(line), " ")
+        screen.addstr(mapheight+2+loop, 0, line + range)
+        
+    
+    screen.refresh(0,0, 0,0, dim[0]-1,dim[1]-1)'''
 
-    output += disHeader("", view_width)
+    '''output += disHeader("", screen)
     print output
     inpt = raw_input("Type planet number for info, or b to go back: ")
     while "" != inpt != "b":
@@ -103,4 +112,4 @@ def drawMap(player, galaxy, view_width, view_height):
         inpt = raw_input("Type planet number for info, or b to go back: ")
         
     if inpt == "b" or inpt == "":
-        print "\n" + info
+        print "\n" + info'''

@@ -61,3 +61,4 @@ def syl(letnum):
             s = s+rm.choice(vow)
             vl = 0
     return s
+    

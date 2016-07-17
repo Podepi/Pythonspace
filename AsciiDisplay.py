@@ -46,8 +46,8 @@ def disDrawCircle(screen, y, x, r, sym, xshift=0, yshift=0, color=None):
     #print x, y
     if color == None:
         color=curses.color_pair(0)
-    for col in xrange(x-r, x+r+1):
-        for cell in xrange(y-r, y+r+1):
+    for col in xrange(x-int(r), x+int(r)+1):
+        for cell in xrange(y-int(r), y+int(r)+1):
             if (col-x)**2 + (cell-y)**2 <= r*r:
                 try:
                     screen.addch(cell - yshift, col - xshift, sym, color)
@@ -73,7 +73,7 @@ def disWrite(screen, dot, xshift=0, yshift=0):
     
     screen.addch(dot.y - yshift, dot.x - xshift, dot.sym)
     
-def disWritePara(screen, y, x, h, w, text):
+def disWritePara(screen, y, x, h, w, text, color=0):
     words = text.split(" ")
     line = 0
     output = [""]
@@ -90,6 +90,6 @@ def disWritePara(screen, y, x, h, w, text):
         output[line] += word.replace("\n", "")
     line = 0
     for l in output:
-        screen.addstr(line+y, x, l)
+        screen.addstr(line+y, x, l, curses.color_pair(color))
         line += 1
     return line

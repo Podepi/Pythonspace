@@ -5,7 +5,7 @@ from rmdesc2 import *
 pwealth = ["Impoverished", "Poor", "Average", "Rich", "Extremely rich"]
 ptype = ["Agricultural", "Industrial", "Mining", "Mixed", "Scientific", "Cultural", "Military"]
 ppop = ["000", "Million", "Billion"]
-pera = ["Early", "Middle", "Late"]
+pera = ["Early", "Mid", "Late"]
 ptech = ["Medieval", "Steam", "Industrial", "Atomic", "Space", "Information", "Robotic", "Cyberpunk", "Nanotech"]
 
 class Planet(object):
@@ -23,6 +23,17 @@ class Planet(object):
         self.temp = 0
         self.desc = "None"
         self.wealth = "None"
+        self.comname = [
+            "Food",
+            "Water",
+            "Alloys",
+            "Machinery",
+            "Raw materials",
+            "Radioactives",
+            "Computers",
+            "Medicine",
+            "Narcotics",
+            "Slaves"]
 
 def genplanet():
     name = makeword(rm.randint(2,3))
@@ -48,4 +59,7 @@ def genNewPlanet():
     planet.temp = rm.randint(-200, 200)
     planet.desc = gendesc(planet.name)
     planet.sym  = planet.name[0]
+    planet.comm = []
+    for i in xrange(10):
+        planet.comm.append(float(rm.randint(1, 500))/10)
     return planet

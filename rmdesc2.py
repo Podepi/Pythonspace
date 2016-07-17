@@ -7,35 +7,18 @@ def remove_end(word, suffix):
     return word
 
 def gendesc(planet_name):
-    d = ""
-    counter = 0
-    points = 0
-    while counter < 3:
-        if random() < 0.5 and counter == 0:
-            d += "{1} {2} {3}".format(planet_name, rmfile("desc_env"), rmfile("adj_env"), rmfile("noun_env"))
-            points += 1
+    d = []
+    if random() < 0.5:
+        d.append("{} {} {}".format(rmfile("desc_env").capitalize(), rmfile("adj_env"), rmfile("noun_env")))
 
-        if random() < 0.5 and counter == 0:
-            if points > 0:
-                d += ", "
-            d += "{1} {0}ian {2} {3}".format(remove_end(planet_name, vow), rmfile("desc_life"), rmfile("adj_life"), rmfile("noun_life"))
-            points += 1
+    if random() < 0.5:
+        d.append("{} {}ian {} {}".format(rmfile("desc_life").capitalize(), remove_end(planet_name, vow), rmfile("adj_life"), rmfile("noun_life")))
 
-        if random() < 0.5 and counter == 1:
-            if points > 0:
-                d += ", "
-            d += genpop()
-            d += " for its {0} {1}".format(rmfile("adj_art"), rmfile("noun_art"))
-            points += 1
+    if random() < 0.5:
+        d.append(genpop().capitalize() + " for its {} {}".format(rmfile("adj_art"), rmfile("noun_art")))
 
-        if random() < 0.5 and counter == 2:
-            if points > 0:
-                d += ", "
-            d += "{0} {1} {2}".format(rmfile("desc_plague"), rmfile("adj_plague"), rmfile("noun_plague"))
-            points += 1
-
-        counter += 1
-    if points == 0:
-        d += "a tedious place"
-    d += "."
-    return d[0].upper() + d[1:len(d)]
+    if random() < 0.5:
+        d.append("{} {} {}".format(rmfile("desc_plague").capitalize(), rmfile("adj_plague"), rmfile("noun_plague")))
+    if len(d) == 0:
+        d.append("This planet is a tedious place")
+    return d

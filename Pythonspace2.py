@@ -38,7 +38,7 @@ class Player(object):
     def jump(self, target):
         dist = calcDist(self.x, self.y, target.x, target.y, 1)
         if dist <= self.range:
-            self.range -= dist
+            #self.range -= dist
             self.planet = target
             self.x = target.x
             self.y = target.y

@@ -176,7 +176,7 @@ def main(stdscr):
                 win1, panel1, selected = menuMap(stdscr, player, galaxy, player.menuptr)
 #Trading screen
         elif player.menu == "trade":
-            if event == curses.KEY_ENTER:
+            if event == ord("q"):
                 win1, panel1 = menuTrade(stdscr, player, [player.menuptr[0], "max"])
             elif event == curses.KEY_LEFT:
                 player.menuptr[1] -= 1

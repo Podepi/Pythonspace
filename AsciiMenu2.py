@@ -147,7 +147,7 @@ def menuMap(screen, player, galaxy, mvptr=(0, 0)):
     except: pass
     #screen.vline(1, 33, "|", 22)
     
-    screen.addstr(22, 1, " J:Jump | T:Trade".ljust(78), curses.color_pair(232))
+    screen.addstr(22, 1, " J:Jump | T:Trade".rjust(78), curses.color_pair(232))
     
     return win1, panel1, selected
 
@@ -157,6 +157,7 @@ def menuTrade(screen, player, ptr):
     player.menu = "trade"
     screen.box()
     message = ""
+    ptr[0] = ptr[0] % len(player.planet.comm)
     if ptr[1] == "max":
         max_buy = int(player.credits/player.planet.comm[ptr[0]])
         if  player.cargo[ptr[0]] > 0:

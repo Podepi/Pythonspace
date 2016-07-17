@@ -36,7 +36,7 @@ def drawMap(player, galaxy, y, x, h, w, view_y=0, view_x=0):
         except:
             pass
     
-    win.border(0, 0, 0, 0, 0, 0, curses.ACS_LTEE, 0)
+    win.border(0, 0, 0, 0, 0, curses.ACS_TTEE, curses.ACS_LTEE, 0)
     win.addstr(0, int(w/2)-5, " {} ".format("Local Map"), curses.color_pair(16))
     win.addstr(1, 1, "Range: {}ly | Location: {} ".format(player.range, current), curses.color_pair(16))
     
@@ -77,7 +77,7 @@ def drawTrade(player, y,x, h,w, ptr=0):
             pass
         line += 1
     
-    win.border(0, 0, 0, 0, 0, 0, curses.ACS_LTEE, 0)
+    win.border(0, 0, 0, 0, 0, curses.ACS_TTEE, curses.ACS_LTEE, curses.ACS_BTEE)
     win.addstr(0, int(w/2)-5, " {} ".format("Trading Screen"), curses.color_pair(16))
     win.addstr(1, 1, "Credits: {} | Hold: {}/{} ".format(player.credits, player.cargotot, player.cargomax), curses.color_pair(16))
     
